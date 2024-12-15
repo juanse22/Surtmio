@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1020410653787",
+    "project_id": "surtmio",
+    "storage_bucket": "surtmio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020410653787:android:355306173cec9fcd51a37e",
+        "android_client_info": {
+          "package_name": "com.example.surtmio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGlixK0fGEWM5sNfrrTnSqRu1UQHJC8B0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
