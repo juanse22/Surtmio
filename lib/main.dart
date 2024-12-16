@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart'; // Importa Firebase Core
-import 'services/auth_service.dart';
-import 'screens/login_screen.dart';
+import 'services/auth_service.dart'; // Importa el servicio de autenticación
+import 'screens/login_screen.dart'; // Importa la pantalla de inicio de sesión
+import 'screens/home_screen.dart'; // Importa la pantalla de inicio (HomeScreen)
 
 void main() async {
   // Asegúrate de que Flutter esté listo antes de inicializar Firebase
@@ -31,7 +32,10 @@ class MyApp extends StatelessWidget {
             titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
           ),
         ),
-        home: LoginScreen(),
+        home: LoginScreen(), // Pantalla inicial: LoginScreen
+        routes: {
+          '/home': (context) => HomeScreen(), // Define la ruta para HomeScreen
+        },
       ),
     );
   }
