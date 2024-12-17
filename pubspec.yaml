@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.19.0 <3.0.0" # Corregido para usar un rango de versiones compatible
+  sdk: ">=2.19.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -15,19 +15,20 @@ dependencies:
   firebase_auth: ^4.6.3
   cloud_firestore: ^4.8.2
   provider: ^6.0.5
+  smooth_page_indicator: ^1.1.0  # Reemplaza carousel_slider
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.13.1 # Agregado para generar íconos
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
 
-flutter_icons: # Configuración para generar íconos
-  android: "launcher_icon" # Nombre del ícono para Android
-  ios: true # Habilita la generación del ícono para iOS
-  image_path: "assets/icon.png" # Ruta de tu archivo de ícono
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.png"

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:surtmio/screens/cart_screen.dart'; // Importa el archivo del carrito
+import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // Añadida importación
+import 'package:surtmio/provider/cart_provider.dart';
+import 'package:surtmio/screens/cart_screen.dart';
+import 'package:surtmio/screens/product_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Lista de productos (puedes reemplazar esto con datos dinámicos)
+  final PageController _pageController = PageController();
   final List<Map<String, dynamic>> products = [
     {
       "name": "Papel Higiénico",
@@ -41,21 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  // Lista filtrada de productos
   List<Map<String, dynamic>> filteredProducts = [];
-
-  // Controlador para la barra de búsqueda
-  final TextEditingController _searchController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Inicializa la lista filtrada con todos los productos
-    filteredProducts = List.from(products);
+    filteredProducts = products;
   }
 
-  // Función para filtrar productos
-  void _filterProducts(String query) {
+  void filterProducts(String query) {
     setState(() {
       filteredProducts = products
           .where((product) =>
@@ -66,38 +65,97 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
             Image.asset(
-              'assets/logo.png', // Ruta del logo
-              height: 30, // Tamaño del logo
+              'assets/logo.png',
+              height: 30,
             ),
             SizedBox(width: 8),
-            Text('Bienvenido'),
+            Text(
+              'Bienvenido',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              // Aquí puedes implementar la lógica para cerrar sesión
-              print('Cerrar sesión');
-            },
-          ),
-        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menú',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+            ListTile(
+              title: Text('Inicio'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Perfil'),
+              onTap: () {
+                // Lógica para ir al perfil
+              },
+            ),
+            ListTile(
+              title: Text('Cerrar Sesión'),
+              onTap: () {
+                // Lógica para cerrar sesión
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
-          // Barra de búsqueda
+          // Contenedor para el PageView
+          Container(
+            height: 200,
+            child: PageView(
+              controller: _pageController,
+              children: [
+                Image.asset('assets/promo1.png', fit: BoxFit.cover),
+                Image.asset('assets/promo2.png', fit: BoxFit.cover),
+                Image.asset('assets/promo3.png', fit: BoxFit.cover),
+              ],
+            ),
+          ),
+          // Indicador de página
           Padding(
             padding: const EdgeInsets.all(8.0),
+            child: SmoothPageIndicator(
+              controller: _pageController,
+              count: 3,
+              effect: WormEffect(
+                dotHeight: 8,
+                dotWidth: 8,
+                activeDotColor: Colors.blue,
+                dotColor: Colors.grey,
+              ),
+            ),
+          ),
+          // Barra de búsqueda
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
-              controller: _searchController,
-              onChanged: _filterProducts,
+              controller: searchController,
+              onChanged: filterProducts,
               decoration: InputDecoration(
-                hintText: 'Search Here...',
+                hintText: 'Buscar productos...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -110,87 +168,103 @@ class _HomeScreenState extends State<HomeScreen> {
             child: GridView.builder(
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Número de columnas
-                childAspectRatio: 0.8, // Relación de aspecto
-                crossAxisSpacing: 16, // Espacio entre columnas
-                mainAxisSpacing: 16, // Espacio entre filas
+                crossAxisCount: 2,
+                childAspectRatio: 0.8,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
               itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
                 final product = filteredProducts[index];
-                return Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Imagen del producto
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                          child: Image.asset(
-                            product['image'],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailScreen(product: product),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                            child: Image.asset(
+                              product['image'],
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
                           ),
                         ),
-                      ),
-                      // Detalles del producto
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product['name'],
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product['name'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '\$${product['price']}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.green,
+                              SizedBox(height: 4),
+                              Text(
+                                '\$${product['price']}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.green,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Botones para ajustar la cantidad
-                                IconButton(
-                                  icon: Icon(Icons.remove),
-                                  onPressed: () {
-                                    setState(() {
-                                      if (product['quantity'] > 0) {
-                                        product['quantity']--;
-                                      }
-                                    });
-                                  },
-                                ),
-                                Text(
-                                  '${product['quantity']}',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.add),
-                                  onPressed: () {
-                                    setState(() {
-                                      product['quantity']++;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
+                              SizedBox(height: 8),
+                              // Selector de cantidad
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.remove),
+                                    onPressed: () {
+                                      setState(() {
+                                        if (product['quantity'] > 0) {
+                                          product['quantity']--;
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  Text('${product['quantity']}'),
+                                  IconButton(
+                                    icon: Icon(Icons.add),
+                                    onPressed: () {
+                                      setState(() {
+                                        product['quantity']++;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (product['quantity'] > 0) {
+                                    cartProvider.addToCart(product);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('${product['name']} añadido al carrito')),
+                                    );
+                                  }
+                                },
+                                child: Text('Agregar al Carrito'),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -198,33 +272,44 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      // Botón del carrito de compras en la parte inferior
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Carrito',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      // Botón del carrito en la parte inferior
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => CartScreen()),
+          );
+        },
+        child: Stack(
+          children: [
+            Icon(Icons.shopping_cart),
+            if (cartProvider.cartItems.isNotEmpty)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  constraints: BoxConstraints(
+                    minWidth: 12,
+                    minHeight: 12,
+                  ),
+                  child: Text(
+                    '${cartProvider.cartItems.length}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.shopping_cart),
-                onPressed: () {
-                  // Navega al carrito de compras
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CartScreen()),
-                  );
-                },
-              ),
-            ],
-          ),
+          ],
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

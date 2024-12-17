@@ -9,7 +9,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
-          'assets/log34o.png', // Ruta del logo
+          'assets/log34qao.png', // Ruta del logo
           height: 30, // Tamaño del logo
         ),
         centerTitle: true,

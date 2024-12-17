@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart'; // Importa Firebase Core
-import 'services/auth_service.dart'; // Importa el servicio de autenticación
+import 'service/auth_service.dart'; // Importa el servicio de autenticación
+import 'provider/cart_provider.dart'; // Importa el provider del carrito
 import 'screens/login_screen.dart'; // Importa la pantalla de inicio de sesión
 import 'screens/home_screen.dart'; // Importa la pantalla de inicio (HomeScreen)
 
@@ -21,9 +22,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => AuthService()), // Provider para autenticación
+        ChangeNotifierProvider(create: (_) => CartProvider()), // Provider para el carrito de compras
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false, // Oculta el banner de debug
         title: 'Aplicación para Tendero',
         theme: ThemeData(
           primarySwatch: Colors.blue,

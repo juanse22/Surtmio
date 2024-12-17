@@ -1,42 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surtmio/provider/cart_provider.dart'; // Importa el provider
 
-class CartScreen extends StatefulWidget {
-  @override
-  _CartScreenState createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  // Lista de productos en el carrito
-  final List<Map<String, dynamic>> cartItems = [
-    {
-      "name": "Papel Higiénico",
-      "price": 1500,
-      "image": "assets/papel_higiénico.png",
-      "quantity": 2,
-    },
-    {
-      "name": "Pimienta",
-      "price": 800,
-      "image": "assets/pimienta.png",
-      "quantity": 1,
-    },
-  ];
-
-  // Método de pago seleccionado
-  String selectedPaymentMethod = 'Nequi'; // Por defecto, Nequi
-
-  // Calcular el total del carrito
-  int get totalAmount {
-    return cartItems.fold(0, (sum, item) {
-      // Convierte los valores a int explícitamente
-      int price = item['price'] as int;
-      int quantity = item['quantity'] as int;
-      return sum + (price * quantity);
-    });
-  }
-
+class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Carrito de Compras'),
@@ -45,9 +15,9 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: cartItems.length,
+              itemCount: cartProvider.cartItems.length,
               itemBuilder: (context, index) {
-                final item = cartItems[index];
+                final item = cartProvider.cartItems[index];
                 return ListTile(
                   leading: Image.asset(
                     item['image'],
@@ -63,22 +33,18 @@ class _CartScreenState extends State<CartScreen> {
                       IconButton(
                         icon: Icon(Icons.remove),
                         onPressed: () {
-                          setState(() {
-                            if (item['quantity'] > 1) {
-                              item['quantity']--;
-                            } else {
-                              cartItems.removeAt(index);
-                            }
-                          });
+                          if (item['quantity'] > 1) {
+                            cartProvider.updateQuantity(item, item['quantity'] - 1);
+                          } else {
+                            cartProvider.removeFromCart(item);
+                          }
                         },
                       ),
                       Text('${item['quantity']}'),
                       IconButton(
                         icon: Icon(Icons.add),
                         onPressed: () {
-                          setState(() {
-                            item['quantity']++;
-                          });
+                          cartProvider.updateQuantity(item, item['quantity'] + 1);
                         },
                       ),
                     ],
@@ -99,33 +65,16 @@ class _CartScreenState extends State<CartScreen> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      '\$$totalAmount',
+                      '\$${cartProvider.totalAmount}',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 SizedBox(height: 16),
-                // Opciones de pago
-                DropdownButton<String>(
-                  value: selectedPaymentMethod,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedPaymentMethod = newValue!;
-                    });
-                  },
-                  items: <String>['Nequi', 'PSE', 'Bancolombia']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     // Lógica para procesar el pago
-                    _processPayment(selectedPaymentMethod);
+                    _processPayment(context, cartProvider.totalAmount);
                   },
                   child: Text('Procesar Pago'),
                   style: ElevatedButton.styleFrom(
@@ -141,16 +90,13 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   // Lógica para procesar el pago
-  void _processPayment(String paymentMethod) {
-    // Aquí puedes implementar la lógica para procesar el pago
-    print('Procesando pago con $paymentMethod');
-    // Ejemplo: Mostrar un diálogo de confirmación
+  void _processPayment(BuildContext context, int totalAmount) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Pago Exitoso'),
-          content: Text('Tu pago con $paymentMethod ha sido procesado correctamente.'),
+          content: Text('Tu pago por \$$totalAmount ha sido procesado correctamente.'),
           actions: [
             TextButton(
               onPressed: () {
