@@ -9,12 +9,12 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
-          'assets/logo.png', // Ruta del logo
+          'assets/log34o.png', // Ruta del logo
           height: 30, // Tamaño del logo
         ),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Solución para evitar overflow
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

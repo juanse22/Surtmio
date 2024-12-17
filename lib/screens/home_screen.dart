@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:surtmio/screens/cart_screen.dart'; // Importa el archivo del carrito
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,34 +12,57 @@ class _HomeScreenState extends State<HomeScreen> {
     {
       "name": "Papel Higiénico",
       "price": 1500,
-      "image": "assets/papel_higiénico.png", // Ruta de la imagen
-      "quantity": 0, // Cantidad seleccionada
+      "image": "assets/papel_higiénico.png",
+      "quantity": 0,
     },
     {
       "name": "Pimienta",
       "price": 800,
-      "image": "assets/pimienta.png", // Ruta de la imagen
-      "quantity": 0, // Cantidad seleccionada
+      "image": "assets/pimienta.png",
+      "quantity": 0,
     },
     {
       "name": "Arroz",
       "price": 2000,
-      "image": "assets/arroz.png", // Ruta de la imagen
-      "quantity": 0, // Cantidad seleccionada
+      "image": "assets/arroz.png",
+      "quantity": 0,
     },
     {
       "name": "Aceite",
       "price": 3000,
-      "image": "assets/aceite.png", // Ruta de la imagen
-      "quantity": 0, // Cantidad seleccionada
+      "image": "assets/aceite.png",
+      "quantity": 0,
     },
     {
       "name": "Leche",
       "price": 1800,
-      "image": "assets/leche.png", // Ruta de la imagen
-      "quantity": 0, // Cantidad seleccionada
+      "image": "assets/leche.png",
+      "quantity": 0,
     },
   ];
+
+  // Lista filtrada de productos
+  List<Map<String, dynamic>> filteredProducts = [];
+
+  // Controlador para la barra de búsqueda
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializa la lista filtrada con todos los productos
+    filteredProducts = List.from(products);
+  }
+
+  // Función para filtrar productos
+  void _filterProducts(String query) {
+    setState(() {
+      filteredProducts = products
+          .where((product) =>
+          product['name'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: _searchController,
+              onChanged: _filterProducts,
               decoration: InputDecoration(
                 hintText: 'Search Here...',
                 prefixIcon: Icon(Icons.search),
@@ -89,9 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisSpacing: 16, // Espacio entre columnas
                 mainAxisSpacing: 16, // Espacio entre filas
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index];
+                final product = filteredProducts[index];
                 return Card(
                   elevation: 4,
                   shape: RoundedRectangleBorder(
@@ -189,8 +215,10 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: Icon(Icons.shopping_cart),
                 onPressed: () {
-                  // Aquí puedes implementar la lógica para ver el carrito
-                  print('Ver carrito');
+                  // Navega al carrito de compras
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CartScreen()),
+                  );
                 },
               ),
             ],
