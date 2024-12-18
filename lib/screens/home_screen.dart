@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.75, // Ajuste para que los productos se vean mejor
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
               ),
@@ -210,15 +210,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 product['name'],
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14, // Tamaño de fuente ajustado
                                   fontWeight: FontWeight.bold,
                                 ),
+                                maxLines: 2, // Limitar a 2 líneas
+                                overflow: TextOverflow.ellipsis,
                               ),
                               SizedBox(height: 4),
                               Text(
                                 '\$${product['price']}',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12, // Tamaño de fuente ajustado
                                   color: Colors.green,
                                 ),
                               ),
@@ -237,7 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       });
                                     },
                                   ),
-                                  Text('${product['quantity']}'),
+                                  Text(
+                                    '${product['quantity']}',
+                                    style: TextStyle(fontSize: 14), // Tamaño de fuente ajustado
+                                  ),
                                   IconButton(
                                     icon: Icon(Icons.add),
                                     onPressed: () {
