@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // Añadida importación
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:surtmio/provider/cart_provider.dart';
 import 'package:surtmio/screens/cart_screen.dart';
 import 'package:surtmio/screens/product_detail_screen.dart';
@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.75, // Ajuste para que los productos se vean mejor
+                childAspectRatio: 0.75,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
               ),
@@ -210,17 +210,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 product['name'],
                                 style: TextStyle(
-                                  fontSize: 14, // Tamaño de fuente ajustado
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
-                                maxLines: 2, // Limitar a 2 líneas
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               SizedBox(height: 4),
                               Text(
                                 '\$${product['price']}',
                                 style: TextStyle(
-                                  fontSize: 12, // Tamaño de fuente ajustado
+                                  fontSize: 12,
                                   color: Colors.green,
                                 ),
                               ),
@@ -241,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   Text(
                                     '${product['quantity']}',
-                                    style: TextStyle(fontSize: 14), // Tamaño de fuente ajustado
+                                    style: TextStyle(fontSize: 14),
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.add),
