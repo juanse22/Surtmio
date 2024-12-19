@@ -43,15 +43,64 @@ class _HomeScreenState extends State<HomeScreen> {
       "image": "assets/leche.png",
       "quantity": 0,
     },
+    // Nuevos productos
+    {
+      "name": "Pan",
+      "price": 500,
+      "image": "assets/pan.png",
+      "quantity": 0,
+    },
+    {
+      "name": "Huevos",
+      "price": 1200,
+      "image": "assets/huevos.png",
+      "quantity": 0,
+    },
+    {
+      "name": "Queso",
+      "price": 2500,
+      "image": "assets/queso.png",
+      "quantity": 0,
+    },
+    {
+      "name": "Jabón",
+      "price": 700,
+      "image": "assets/jabon.png",
+      "quantity": 0,
+    },
+    {
+      "name": "Café",
+      "price": 3500,
+      "image": "assets/cafe.png",
+      "quantity": 0,
+    },
   ];
 
   List<Map<String, dynamic>> filteredProducts = [];
   TextEditingController searchController = TextEditingController();
+  bool isSearching = false;
+  String currentSuggestion = "";
+  int currentSuggestionIndex = 0;
 
   @override
   void initState() {
     super.initState();
     filteredProducts = products;
+
+    // Iniciar el carrusel de sugerencias
+    startSuggestionCarousel();
+
+    // Escuchar cambios en el controlador de búsqueda
+    searchController.addListener(() {
+      setState(() {
+        isSearching = searchController.text.isNotEmpty;
+        if (isSearching) {
+          stopSuggestionCarousel(); // Detener el carrusel de sugerencias
+          currentSuggestion = ""; // Borrar la sugerencia actual
+        }
+        filterProducts(searchController.text);
+      });
+    });
   }
 
   void filterProducts(String query) {
@@ -60,6 +109,27 @@ class _HomeScreenState extends State<HomeScreen> {
           .where((product) =>
           product['name'].toLowerCase().contains(query.toLowerCase()))
           .toList();
+    });
+  }
+
+  // Iniciar el carrusel de sugerencias
+  void startSuggestionCarousel() {
+    Future.delayed(Duration(seconds: 2), () {
+      if (!isSearching) {
+        setState(() {
+          currentSuggestion = products[currentSuggestionIndex]['name'];
+          currentSuggestionIndex =
+              (currentSuggestionIndex + 1) % products.length;
+        });
+        startSuggestionCarousel(); // Repetir el ciclo
+      }
+    });
+  }
+
+  // Detener el carrusel de sugerencias
+  void stopSuggestionCarousel() {
+    setState(() {
+      currentSuggestion = "";
     });
   }
 
@@ -123,42 +193,56 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           // Contenedor para el PageView
-          Container(
-            height: 200,
-            child: PageView(
-              controller: _pageController,
-              children: [
-                Image.asset('assets/promo1.png', fit: BoxFit.cover),
-                Image.asset('assets/promo2.png', fit: BoxFit.cover),
-                Image.asset('assets/promo3.png', fit: BoxFit.cover),
-              ],
-            ),
-          ),
-          // Indicador de página
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SmoothPageIndicator(
-              controller: _pageController,
-              count: 3,
-              effect: WormEffect(
-                dotHeight: 8,
-                dotWidth: 8,
-                activeDotColor: Colors.blue,
-                dotColor: Colors.grey,
+          if (!isSearching)
+            Container(
+              height: 200,
+              child: PageView(
+                controller: _pageController,
+                children: [
+                  Image.asset('assets/promo1.png', fit: BoxFit.cover),
+                  Image.asset('assets/promo2.png', fit: BoxFit.cover),
+                  Image.asset('assets/promo3.png', fit: BoxFit.cover),
+                ],
               ),
             ),
-          ),
-          // Barra de búsqueda
+          // Indicador de página
+          if (!isSearching)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SmoothPageIndicator(
+                controller: _pageController,
+                count: 3,
+                effect: WormEffect(
+                  dotHeight: 8,
+                  dotWidth: 8,
+                  activeDotColor: Colors.blue,
+                  dotColor: Colors.grey,
+                ),
+              ),
+            ),
+          // Barra de búsqueda con sugerencias animadas
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: searchController,
-              onChanged: filterProducts,
-              decoration: InputDecoration(
-                hintText: 'Buscar productos...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 500), // Animación suave
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+              child: TextField(
+                key: ValueKey(currentSuggestion), // Cambia la clave para animar
+                controller: searchController,
+                onChanged: filterProducts,
+                decoration: InputDecoration(
+                  hintText: currentSuggestion.isEmpty
+                      ? 'Buscar productos...'
+                      : currentSuggestion,
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
